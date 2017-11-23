@@ -1,0 +1,46 @@
+{
+    "name": "quickdatastructures",
+    "displayName": "quickDataStructures",
+    "description": "Automatically produce code that builds a binary tree or other data structures for you.",
+    "version": "0.0.1",
+    "publisher": "Tommy",
+    "engines": {
+        "vscode": "^1.18.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.genBinSearchTree",
+        "onCommand:extension.genNodeObject",
+        "onCommand:extension.genBinTree"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.genBinSearchTree",
+                "title": "Generate Binary Search Tree"
+            },
+            {
+                "command": "extension.genNodeObject",
+                "title": "Generate Node Object"
+            },
+            {
+                "command": "extension.genBinTree",
+                "title": "Generate Binary Tree"
+            }
+        ]
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "eslint": "^4.6.1",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    }
+}
