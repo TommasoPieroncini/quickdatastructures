@@ -1,6 +1,7 @@
 # quickdatastructures README
 
-This is the README for your extension "quickdatastructures". After writing up a brief description, we recommend including the following sections.
+This Visual Studio Code extension is a light weight and quick way to build complex data structures for you to use in your code.
+The extension automatically generates readable Python code that builds the data structures in your program, and therefore allows easy customization.
 
 ## Features
 
