@@ -12,7 +12,7 @@
     ],
     "activationEvents": [
         "onCommand:extension.genBinSearchTree",
-        "onCommand:extension.genNodeObject",
+        "onCommand:extension.genLL",
         "onCommand:extension.genBinTree"
     ],
     "main": "./extension",
@@ -23,8 +23,8 @@
                 "title": "Generate Binary Search Tree"
             },
             {
-                "command": "extension.genNodeObject",
-                "title": "Generate Node Object"
+                "command": "extension.genLL",
+                "title": "Generate Linked List"
             },
             {
                 "command": "extension.genBinTree",
