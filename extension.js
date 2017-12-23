@@ -68,56 +68,90 @@ function buildBinSearchTree(dataArr) {
     return nodeName;
 }
 
-function genTree(isBinSearch) {
-    vscode.window.showInputBox({prompt: 'Enter number of nodes in the tree'}).then((numNodes) => {
-        vscode.window.showInputBox({prompt: 'Enter minimum data value (integer)'}).then((minimum) => {
-            vscode.window.showInputBox({prompt: 'Enter maximum data value (integer)'}).then((maximum) => {
-                vscode.window.showInputBox({prompt: 'Generate Node class? y/n'}).then((genNode) => {
+function genTree(numNodes, minimum, maximum, genClass, isBinSearch) {
+    const editor = vscode.window.activeTextEditor;
 
-                    const editor = vscode.window.activeTextEditor;
+    if (editor) {
 
-                    if (editor) {
-                        let myData = new Array(numNodes);
-                        let interval = Math.floor((maximum - minimum) / numNodes);
-                        let data = Math.abs(minimum);
-                        for (var i = 0; i < numNodes; i++) {
-                            myData[i] = randomIntFromInterval(data + i * interval, (i + 1) * interval);
-                            data = myData[i];
-                        }
+        let mData = new Array(numNodes);
+        let interval = Math.floor((maximum - minimum) / numNodes);
+        let data = Math.abs(minimum);
+        for (var i = 0; i < numNodes; i++) {
+            mData[i] = randomIntFromInterval(data + i * interval, data + (i + 1) * interval);
+        }
 
-                        if (!isBinSearch) {
-                            shuffleArray(myData);
-                        }
+        if (!isBinSearch) {
+            shuffleArray(mData);
+        }
 
-                        if (genNode === "y" || genNode === "yes") {
-                            var nodeStr = "class BTNode:\n\tdef __init__(self, data):\n\t\tself.data = data\n\t\tself.right = None\n\t\tself.left = None\n\n";
-                            outString += nodeStr;
-                        }
-                        var root = buildBinSearchTree(myData);
-                        // for (var line in printedTree) {
-                        //     outString += line;
-                        // }
+        if (genClass === "y" || genClass === "yes") {
+            var nodeStr = "class BTNode:\n\tdef __init__(self, data):\n\t\tself.data = data\n\t\tself.right = None\n\t\tself.left = None\n\n";
+            outString += nodeStr;
+        }
+        var root = buildBinSearchTree(mData);
 
-                        outString += "\ntreeroot" + root + " = " + root + "\n\n";
+        // DEBUG
+        // for (var line in printedTree) {
+        //     outString += line;
+        // }
 
-                        const cursorPos = editor.selection.active;
-                        editor.edit((tee) => {
-                            tee.insert(cursorPos, outString);
-                        });
-                        outString = "";
-                    }
-                }, (error) => {
-                    console.log(error);
-                });
-            }, (error) => {
-                console.log(error);
-            });
-        }, (error) => {
-            console.log(error);
+        outString += "\n# This is the root of the tree\n";
+        outString += "treeRoot" + root + " = " + root + "\n\n";
+
+        const cursorPos = editor.selection.active;
+        editor.edit((tee) => {
+            tee.insert(cursorPos, outString);
         });
-    }, (error) => {
-        console.log(error);
-    });
+        outString = "";
+    }
+}
+
+function genLL(numNodes, numNodesInCycle, minimum, maximum, sorted, genLLNodeClass) {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+        if (genLLNodeClass) {
+            var nodeStr = "class LLNode:\ndef __init__(self, data):\n\t\tself.data = data\n\t\tself.next = None\n\n";
+            outString += nodeStr;
+        }
+
+        let mData = new Array(numNodes);
+        let interval = Math.floor((maximum - minimum) / numNodes);
+        let data = Math.abs(minimum);
+        for (var i = 0; i < numNodes; i++) {
+            mData[i] = randomIntFromInterval(data + i * interval, data + (i + 1) * interval);
+        }
+
+        if (sorted !== "y" && sorted !== "yes") {
+            shuffleArray(mData);
+        }
+
+        let mNodes = new Array(numNodes);
+        var cycleStart = "";
+        for (i = 0; i < numNodes; i++) {
+            var nodeName = "node" + base++;
+            mNodes[i] = nodeName;
+            if (numNodes - numNodesInCycle == i)
+                cycleStart = nodeName;
+            outString += nodeName + " = LLNode(" + mData[i] + ")\n";
+        }
+
+        for (i = 0; i < numNodes - 1; i++) {
+            outString += mNodes[i] + ".next = " + mNodes[i + 1] + "\n";
+        }
+
+        if (numNodesInCycle != 0) {
+            outString += mNodes[numNodes - 1] + ".next = " + cycleStart + "\n";
+        }
+        
+        outString += "\n# This is the head of the linked list\n";
+        outString += "llHead" + mNodes[0] + " = " + mNodes[0] + "\n\n";
+
+        const cursorPos = editor.selection.active;
+        editor.edit((tee) => {
+            tee.insert(cursorPos, outString);
+        });
+        outString = "";
+    }
 }
 
 // this method is called when your extension is activated
@@ -131,40 +165,83 @@ function activate(context) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
-    let binSearch = vscode.commands.registerCommand('extension.genBinSearchTree', function () {
-        genTree(true);
+    let binSearchTree = vscode.commands.registerCommand('extension.genBinSearchTree', function () {
+        vscode.window.showInputBox({value: "10", prompt: 'Enter number of nodes in the tree'}).then((numNodes) => {
+            vscode.window.showInputBox({value: "0", prompt: 'Enter minimum data value (integer)'}).then((minimum) => {
+                vscode.window.showInputBox({value: numNodes * 100, prompt: 'Enter maximum data value (integer)'}).then((maximum) => {
+                    vscode.window.showInputBox({prompt: 'Generate BinTree Node class? (y/n)'}).then((genClass) => {
+                        genTree(numNodes, minimum, maximum, genClass, true);
+                    }, (error) => {
+                        console.log(error);
+                    });
+                }, (error) => {
+                    console.log(error);
+                });
+            }, (error) => {
+                console.log(error);
+            });
+        }, (error) => {
+            console.log(error);
+        });
     });
 
-    // let nodeObj = vscode.commands.registerCommand('extension.genNodeObject', function () {
-    //     const editor = vscode.window.activeTextEditor;
-
-    //     var nodeStr = "class Node:\n\tdef __init__(data):\n\t\tself.data = data\n\t\tself.right = None\n\t\tself.left = None"
-
-    //     editor.edit((tee) => {
-    //         tee.insert(new vscode.Position(1, 0), nodeStr);
-    //     });
-    // });
-
     let binTree = vscode.commands.registerCommand('extension.genBinTree', function () {
-        genTree(false);
+        vscode.window.showInputBox({value: "10", prompt: 'Enter number of nodes in the tree'}).then((numNodes) => {
+            vscode.window.showInputBox({value: "0", prompt: 'Enter minimum data value (integer)'}).then((minimum) => {
+                vscode.window.showInputBox({value: numNodes * 100, prompt: 'Enter maximum data value (integer)'}).then((maximum) => {
+                    vscode.window.showInputBox({prompt: 'Generate BinTree Node class? (y/n)'}).then((genClass) => {
+                        genTree(numNodes, minimum, maximum, genClass, false);
+                    }, (error) => {
+                        console.log(error);
+                    });
+                }, (error) => {
+                    console.log(error);
+                });
+            }, (error) => {
+                console.log(error);
+            });
+        }, (error) => {
+            console.log(error);
+        });
     });
 
     let linkedList = vscode.commands.registerCommand('extension.genLL', function () {
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-
-            var nodeStr = "class LLNode:\n\tdef __init__(self, data):\n\t\tself.data = data\n\t\tself.next = None\n\n";
-            outString += nodeStr;
-
-            const cursorPos = editor.selection.active;
-            editor.edit((tee) => {
-                tee.insert(cursorPos, outString);
+        vscode.window.showInputBox({value: "10", prompt: 'Enter number of nodes in the list'}).then((numNodes) => {
+            vscode.window.showInputBox({value: "0", prompt: 'Enter minimum data value (integer)'}).then((minimum) => {
+                vscode.window.showInputBox({value: numNodes * 100, prompt: 'Enter maximum data value (integer)'}).then((maximum) => {
+                    vscode.window.showInputBox({value: "0", prompt: 'Enter number of nodes in a cycle (integer [0-N], N = total nodes in list)'}).then((cycleNodes) => {
+                        if (Math.abs(cycleNodes) > Math.abs(numNodes)) {
+                            console.log("Error - not enough nodes in LL");
+                            return;
+                        }
+                        vscode.window.showInputBox({prompt: 'Should the list be sorted? (y/n) - default is yes'}).then((sorted) => {
+                            vscode.window.showInputBox({prompt: 'Generate LL Node class? (y/n) - default is no'}).then((genClass) => {
+                                if (genClass === "y" || genClass === "yes") {
+                                    genLL(numNodes, cycleNodes, minimum, maximum, sorted, true);
+                                } else {
+                                    genLL(numNodes, cycleNodes, minimum, maximum, sorted, false);
+                                }
+                            }, (error) => {
+                                console.log(error);
+                            });
+                        }, (error) => {
+                            console.log(error);
+                        });
+                    }, (error) => {
+                        console.log(error);
+                    });
+                }, (error) => {
+                    console.log(error);
+                });
+            }, (error) => {
+                console.log(error);
             });
-            outString = "";
-        }
+        }, (error) => {
+            console.log(error);
+        });
     });
 
-    context.subscriptions.push(binSearch);
+    context.subscriptions.push(binSearchTree);
     context.subscriptions.push(binTree);
     context.subscriptions.push(linkedList);
 }
