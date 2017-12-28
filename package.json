@@ -20,15 +20,15 @@
         "commands": [
             {
                 "command": "extension.genBinSearchTree",
-                "title": "Generate Binary Search Tree"
+                "title": "quickdatastructures: Generate Binary Search Tree"
             },
             {
                 "command": "extension.genLL",
-                "title": "Generate Linked List"
+                "title": "quickdatastructures: Generate Linked List"
             },
             {
                 "command": "extension.genBinTree",
-                "title": "Generate Binary Tree"
+                "title": "quickdatastructures: Generate Binary Tree"
             }
         ]
     },
