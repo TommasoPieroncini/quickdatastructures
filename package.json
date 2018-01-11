@@ -2,7 +2,7 @@
     "name": "quickdatastructures",
     "displayName": "quickDataStructures",
     "description": "Automatically produce code that builds a binary tree or other data structures for you.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "Tommy",
     "engines": {
         "vscode": "^1.18.0"
